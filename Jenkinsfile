@@ -33,6 +33,14 @@ pipeline {
                 }
             }
         }
+         stage('Verify Docker Image') {
+            steps {
+                script {
+                    // List Docker images to verify the build
+                    sh 'docker images'
+                }
+            }
+        }
         
         // stage('Run Docker Container') {
         //     steps {
