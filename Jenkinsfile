@@ -17,6 +17,7 @@ pipeline {
             steps{
                 script{
                     //sh 'docker build -t suresh394/kubernetes .'
+                     withEnv(['DOCKER_BUILDKIT=1']) {
                     sh 'docker build -t my-image .'
                 }
             }
