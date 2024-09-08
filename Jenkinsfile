@@ -14,7 +14,8 @@ pipeline {
         stage('Build docker image'){
             steps{
                 script{
-                    sh 'docker build -t suresh394/kubernetes .'
+                   // sh 'docker build -t suresh394/kubernetes .'
+                    sh 'docker build -t my-image .'
                 }
             }
         }
