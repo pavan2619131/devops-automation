@@ -17,9 +17,9 @@ pipeline {
             steps{
                 script{
                     //sh 'docker build -t suresh394/kubernetes .'
-                     withEnv(['DOCKER_BUILDKIT=1']) {
-                    sh 'docker build -t my-image .'
-                }
+                     
+                    sh 'docker build -t openjdk:8 .'
+                
             }
         }
         // stage('Push image to hub'){
