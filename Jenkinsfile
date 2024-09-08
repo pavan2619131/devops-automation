@@ -13,34 +13,46 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-        stage('Build docker image'){
-            steps{
-                script{
-                    //sh 'docker build -t suresh394/kubernetes .'
-                     
-                    sh 'docker build -t openjdk:8 .'
-                
+
+          stage('Build Maven') {
+            steps {
+                // Build the project using Maven
+                sh 'mvn clean install'
             }
         }
-        // stage('Push image to hub'){
-        //     steps{
-        //         script{
-        //             withCredentials([string(credentialsId: 'dockerhubpwd', variable: 'dockerhubpwd')]) {
-        //             sh 'docker login -u suresh394 -p ${dockerhubpwd}'
-                        
-        //             }
-        //             sh 'docker push suresh394/kubernetes'
-        //         }
-        //     }
-        // }
-        // stage('Deploy to K8s'){
-        //     steps{
-        //         script{
-        //             kubernetesDeploy (configs: 'deploymentservice.yaml',kubeconfigId: 'kubeconfig')
-        //         }
-        //     }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Construct Docker image name based on job name
+                    def imageName = "${JOB_NAME}-image"
+                    echo "Building Docker image: ${imageName}"
+                    
+                    // Build Docker image from the Dockerfile in the root of the workspace
+                    docker.build(imageName)
+                }
+            }
+        }
+        
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    // Construct Docker image name and container name based on job name
+                    def imageName = "${JOB_NAME}-image"
+                    def containerName = "${JOB_NAME}-container"
+                    
+                    echo "Running Docker container: ${containerName}"
+                    
+                    // Run the Docker container from the built image
+                    docker.image(imageName).run("-d -p 8080:8080 --name ${containerName}")
+                }
+            }
+        }
+
+
+
          }
     
     }    
-}
+
 
