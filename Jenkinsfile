@@ -17,12 +17,19 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Construct Docker image name based on job name
-                    def imageName = "${JOB_NAME}-image"
-                    echo "Building Docker image: ${imageName}"
+                    // // Construct Docker image name based on job name
+                    // def imageName = "${JOB_NAME}-image"
+                    // echo "Building Docker image: ${imageName}"
                     
-                    // Build Docker image from the Dockerfile in the root of the workspace
-                    docker.build(imageName)
+                    // // Build Docker image from the Dockerfile in the root of the workspace
+                    // docker.build(imageName)
+
+                     // Construct Docker image name based on job name
+                    def imageName = "${JOB_NAME}-image"
+                    echo "Building Docker image with BuildKit: ${imageName}"
+                    
+                    // Enable BuildKit and build Docker image
+                    sh "DOCKER_BUILDKIT=1 docker build -t ${imageName} ."
                 }
             }
         }
