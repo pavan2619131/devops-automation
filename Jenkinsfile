@@ -4,6 +4,12 @@ pipeline {
         maven 'maven'
     }
     
+    environment {
+        ECR_REPO_URI = '533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep'  // Replace with your ECR repository URI
+        AWS_REGION = 'us-east-1'      // Replace with your AWS region
+        IMAGE_NAME = "${JOB_NAME}-image"    // Docker image name
+        IMAGE_TAG = 'latest'                // Docker image tag
+    }
     stages{
         stage('Build Maven'){
             steps{
@@ -41,6 +47,35 @@ pipeline {
                 }
             }
         }
+
+          stage('Login to ECR') {
+            steps {
+                script {
+                    // Login to Amazon ECR
+                    sh '''
+                    $(aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI})
+                    '''
+                }
+            }
+        }
+        
+        stage('Tag Docker Image') {
+            steps {
+                script {
+                    // Tag Docker image for ECR
+                    sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO_URI}/${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
+        
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Push Docker image to ECR
+                    sh "docker push ${ECR_REPO_URI}/${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
         
         stage('Run Docker Container') {
             steps {
@@ -56,40 +91,6 @@ pipeline {
                 }
             }
         }
-
-
-//         stage('Run Docker Container') {
-//     steps {
-//         script {
-//             // Construct Docker image name and container name based on job name
-//             def imageName = "${JOB_NAME}-image"
-//             // Replace slashes with hyphens to conform to Docker's naming rules
-//             def containerName = "${JOB_NAME}-container".replace('/', '-')
-            
-//             echo "Running Docker container: ${containerName}"
-            
-//             // Run the Docker container from the built image
-//             docker.image(imageName).run("-d -p 8080:8080 --name ${containerName}")
-//         }
-//     }
-// }
-
-
-        // stage('Run Docker Container') {
-        //     steps {
-        //         script {
-        //             def imageName = "${JOB_NAME.replaceAll('/', '-')}-image"
-        //             def containerName = "${JOB_NAME.replaceAll('/', '-')}-container"
-                    
-        //             echo "Running Docker container: ${containerName}"
-                    
-        //             // Run the Docker container from the built image
-        //             sh "docker run -d -p 8080:8080 --name ${containerName} ${imageName}"
-        //         }
-        //     }
-        // }
-
-
 
          }
     
