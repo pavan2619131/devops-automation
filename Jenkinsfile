@@ -42,34 +42,34 @@ pipeline {
             }
         }
         
-        // stage('Run Docker Container') {
-        //     steps {
-        //         script {
-        //             // Construct Docker image name and container name based on job name
-        //             def imageName = "${JOB_NAME}-image"
-        //             def containerName = "${JOB_NAME}-container"
-                    
-        //             echo "Running Docker container: ${containerName}"
-                    
-        //             // Run the Docker container from the built image
-        //             docker.image(imageName).run("-d -p 8080:8080 --name ${containerName}")
-        //         }
-        //     }
-        // }
-
         stage('Run Docker Container') {
             steps {
                 script {
-                    def imageName = "${JOB_NAME.replaceAll('/', '-')}-image"
-                    def containerName = "${JOB_NAME.replaceAll('/', '-')}-container"
+                    // Construct Docker image name and container name based on job name
+                    def imageName = "${JOB_NAME}-image"
+                    def containerName = "${JOB_NAME}-container"
                     
                     echo "Running Docker container: ${containerName}"
                     
                     // Run the Docker container from the built image
-                    sh "docker run -d -p 8080:8080 --name ${containerName} ${imageName}"
+                    docker.image(imageName).run("-d -p 8080:8080 --name ${containerName}")
                 }
             }
         }
+
+        // stage('Run Docker Container') {
+        //     steps {
+        //         script {
+        //             def imageName = "${JOB_NAME.replaceAll('/', '-')}-image"
+        //             def containerName = "${JOB_NAME.replaceAll('/', '-')}-container"
+                    
+        //             echo "Running Docker container: ${containerName}"
+                    
+        //             // Run the Docker container from the built image
+        //             sh "docker run -d -p 8080:8080 --name ${containerName} ${imageName}"
+        //         }
+        //     }
+        // }
 
 
 
