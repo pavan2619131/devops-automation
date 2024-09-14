@@ -52,9 +52,12 @@ pipeline {
             steps {
                 script {
                     // Login to Amazon ECR
-                    sh '''
-                    $(aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI})
-                    '''
+
+                   // aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 533267326662.dkr.ecr.us-east-1.amazonaws.com
+                     sh '''
+                    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 533267326662.dkr.ecr.us-east-1.amazonaws.com
+                    // $(aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI})
+                     '''
                 }
             }
         }
