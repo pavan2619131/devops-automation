@@ -52,7 +52,7 @@ pipeline {
                     echo "Running Docker container: ${containerName}"
                     
                     // Run the Docker container from the built image
-                    docker.image(imageName).run("-d -p 8081:8081 --name ${containerName}")
+                    docker.image(imageName).run("-it -p 8081:8081 --name devops-automation")
                 }
             }
         }
