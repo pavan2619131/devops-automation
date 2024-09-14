@@ -42,20 +42,38 @@ pipeline {
             }
         }
         
+        // stage('Run Docker Container') {
+        //     steps {
+        //         script {
+        //             // Construct Docker image name and container name based on job name
+        //             def imageName = "${JOB_NAME}-image"
+        //             def containerName = "${JOB_NAME}-container"
+                    
+        //             echo "Running Docker container: ${containerName}"
+                    
+        //             // Run the Docker container from the built image
+        //             docker.image(imageName).run("-d -p 8080:8080 --name ${containerName}")
+        //         }
+        //     }
+        // }
+
+
         stage('Run Docker Container') {
-            steps {
-                script {
-                    // Construct Docker image name and container name based on job name
-                    def imageName = "${JOB_NAME}-image"
-                    def containerName = "${JOB_NAME}-container"
-                    
-                    echo "Running Docker container: ${containerName}"
-                    
-                    // Run the Docker container from the built image
-                    docker.image(imageName).run("-d -p 8080:8080 --name ${containerName}")
-                }
-            }
+    steps {
+        script {
+            // Construct Docker image name and container name based on job name
+            def imageName = "${JOB_NAME}-image"
+            // Replace slashes with hyphens to conform to Docker's naming rules
+            def containerName = "${JOB_NAME}-container".replace('/', '-')
+            
+            echo "Running Docker container: ${containerName}"
+            
+            // Run the Docker container from the built image
+            docker.image(imageName).run("-d -p 8080:8080 --name ${containerName}")
         }
+    }
+}
+
 
         // stage('Run Docker Container') {
         //     steps {
