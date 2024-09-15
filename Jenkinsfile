@@ -79,7 +79,7 @@ pipeline {
                 script {
                     // Push Docker image to ECR
                     sh '''
-                  docker push 533267326662.dkr.ecr.us-east-1.amazonaws.com:devops-automation-main-image
+                 docker push 533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep:devops-automation-main-image
                     //sh "docker push ${ECR_REPO_URI}/${IMAGE_NAME}:${IMAGE_TAG}"
                     '''
                 }
