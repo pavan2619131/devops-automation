@@ -1,35 +1,120 @@
+# apiVersion: apps/v1
+# kind: Deployment # Kubernetes resource kind we are creating
+# metadata:
+#   name: spring-boot-k8s-deployment
+# spec:
+#   selector:
+#     matchLabels:
+#       app: spring-boot-k8s
+#   replicas: 2 # Number of replicas that will be created for this deployment
+#   template:
+#     metadata:
+#       labels:
+#         app: spring-boot-k8s
+#     spec:
+#       containers:
+#         - name: spring-boot-k8s
+#           image: suresh394/kubernetes # Image that will be used to containers in the cluster
+#           imagePullPolicy: IfNotPresent
+#           ports:
+#             - containerPort: 8080 # The port that the container is running on in the cluster
+
+
+# ---
+# apiVersion: v1
+# kind: Service 
+# metadata: 
+#   name: springboot-k8ssvc
+# spec:
+#   type: NodePort
+#   selector:
+#     app: spring-boot-k8s
+#   ports:
+#     - nodePort: 30163
+#       port: 8080 
+#       targetPort: 8080
+
+
 apiVersion: apps/v1
-kind: Deployment # Kubernetes resource kind we are creating
+kind: Deployment
 metadata:
-  name: spring-boot-k8s-deployment
+  name:  oam-service-dde-tsp
+  namespace: production
 spec:
   selector:
     matchLabels:
-      app: spring-boot-k8s
-  replicas: 2 # Number of replicas that will be created for this deployment
+      app: oam-service-dde-tsp
+      tier: backend
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   template:
     metadata:
       labels:
-        app: spring-boot-k8s
+        app: oam-service-dde-tsp
+        tier: backend
     spec:
       containers:
-        - name: spring-boot-k8s
-          image: suresh394/kubernetes # Image that will be used to containers in the cluster
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 8080 # The port that the container is running on in the cluster
-
+      - name: oam-service-dde-tsp
+        image: 992382679841.dkr.ecr.ap-south-1.amazonaws.com/oam-plus:oam-service-dde-tsp
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 500Mi
+          limits:
+            cpu: 500m
+            memory: 1500Mi
+        envFrom:
+          - configMapRef:
+              name: oamplus-configmap
+        ports:
+        - containerPort: 2009
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: aws-secret
 
 ---
+
 apiVersion: v1
-kind: Service 
-metadata: 
-  name: springboot-k8ssvc
+kind: Service
+metadata:
+  name: oam-service-dde-tsp
+  namespace: production
 spec:
-  type: NodePort
   selector:
-    app: spring-boot-k8s
+    app: oam-service-dde-tsp
   ports:
-    - nodePort: 30163
-      port: 8080 
-      targetPort: 8080
+  - name: oam-service-dde-tsp
+    protocol: TCP
+    port: 2009
+    targetPort: 2009
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: oam-service-dde-tsp-hpa
+  namespace: production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: oam-service-dde-tsp
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 85
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 120
+
+
