@@ -5,10 +5,14 @@ pipeline {
     }
     
     environment {
-        ECR_REPO_URI = '533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep'  // Replace with your ECR repository URI
-        AWS_REGION = 'us-east-1'      // Replace with your AWS region
+       // ECR_REPO_URI = '533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep'  // Replace with your ECR repository URI
+       // AWS_REGION = 'us-east-1'      // Replace with your AWS region
         IMAGE_NAME = "${JOB_NAME}-image"    // Docker image name
         IMAGE_TAG = 'latest'                // Docker image tag
+
+        AWS_REGION = 'us-east-1'
+        ECR_REPO_URI = '533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep'
+    
     }
     stages{
         stage('Build Maven'){
@@ -48,44 +52,78 @@ pipeline {
             }
         }
 
-          stage('Login to ECR') {
+        //   stage('Login to ECR') {
+        //     steps {
+        //         script {
+        //             // Login to Amazon ECR
+
+        //            // aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 533267326662.dkr.ecr.us-east-1.amazonaws.com
+        //              sh '''
+        //             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 533267326662.dkr.ecr.us-east-1.amazonaws.com
+        //             // $(aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI})
+        //              '''
+        //         }
+        //     }
+        // }
+        
+        // stage('Tag Docker Image') {
+        //     steps {
+        //         script {
+        //             // Tag Docker image for ECR
+        //              sh '''
+        //           docker tag devops-automation/main-image:latest 533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep:devops-automation-main-image
+        //               '''
+        //            // sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO_URI}/${IMAGE_NAME}:${IMAGE_TAG}"
+        //         }
+        //     }
+        // }
+        
+        // stage('Push Docker Image') {
+        //     steps {
+        //         script {
+        //             // Push Docker image to ECR
+        //             sh '''
+        //          docker push 533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep:devops-automation-main-image
+        //             //sh "docker push ${ECR_REPO_URI}/${IMAGE_NAME}:${IMAGE_TAG}"
+        //             '''
+        //         }
+        //     }
+        // }
+
+           
+        stage('Login to ECR') {
             steps {
                 script {
                     // Login to Amazon ECR
-
-                   // aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 533267326662.dkr.ecr.us-east-1.amazonaws.com
-                     sh '''
-                    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 533267326662.dkr.ecr.us-east-1.amazonaws.com
-                    // $(aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI})
-                     '''
+                    sh '''
+                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI}
+                    '''
                 }
             }
         }
-        
+
         stage('Tag Docker Image') {
             steps {
                 script {
                     // Tag Docker image for ECR
-                     sh '''
-                  docker tag devops-automation/main-image:latest 533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep:devops-automation-main-image
-                      '''
-                   // sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO_URI}/${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh '''
+                    docker tag devops-automation/main-image:latest ${ECR_REPO_URI}:devops-automation-main-image
+                    '''
                 }
             }
         }
-        
+
         stage('Push Docker Image') {
             steps {
                 script {
                     // Push Docker image to ECR
                     sh '''
-                 docker push 533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep:devops-automation-main-image
-                    //sh "docker push ${ECR_REPO_URI}/${IMAGE_NAME}:${IMAGE_TAG}"
+                    docker push ${ECR_REPO_URI}:devops-automation-main-image
                     '''
                 }
             }
+       
         }
-        
         stage('Run Docker Container') {
             steps {
                 script {
