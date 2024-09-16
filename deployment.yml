@@ -38,12 +38,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name:  oam-service-dde-tsp
+  name:  devops-automation
   namespace: production
 spec:
   selector:
     matchLabels:
-      app: oam-service-dde-tsp
+      app: devops-automation
       tier: backend
   strategy:
     rollingUpdate:
@@ -53,12 +53,12 @@ spec:
   template:
     metadata:
       labels:
-        app: oam-service-dde-tsp
+        app: devops-automation
         tier: backend
     spec:
       containers:
-      - name: oam-service-dde-tsp
-        image: 992382679841.dkr.ecr.ap-south-1.amazonaws.com/oam-plus:oam-service-dde-tsp
+      - name: devops-automation
+        image: 533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep
         imagePullPolicy: Always
         resources:
           requests:
@@ -81,13 +81,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: oam-service-dde-tsp
+  name: devops-automation
   namespace: production
 spec:
   selector:
-    app: oam-service-dde-tsp
+    app: devops-automation
   ports:
-  - name: oam-service-dde-tsp
+  - name: devops-automation
     protocol: TCP
     port: 2009
     targetPort: 2009
@@ -97,13 +97,13 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: oam-service-dde-tsp-hpa
+  name: devops-automation-hpa
   namespace: production
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: oam-service-dde-tsp
+    name: devops-automation
   minReplicas: 1
   maxReplicas: 3
   metrics:
