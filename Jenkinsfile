@@ -94,36 +94,44 @@ pipeline {
         stage('Login to ECR') {
             steps {
                 script {
-                    // Login to Amazon ECR
-                    sh '''
+                    withAWS(credentials: 'aws-k8s', region: 'us-east-1') {
+                sh ('aws eks update-kubeconfig --region us-east-1 --name opl-cluster')
+                sh '''
                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI}
-                    '''
-                }
-            }
-        }
-
-        stage('Tag Docker Image') {
-            steps {
-                script {
-                    // Tag Docker image for ECR
-                    sh '''
                     docker tag devops-automation/main-image:latest ${ECR_REPO_URI}:devops-automation-main-image
-                    '''
-                }
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    // Push Docker image to ECR
-                    sh '''
                     docker push ${ECR_REPO_URI}:devops-automation-main-image
                     '''
+            }
+                    // Login to Amazon ECR
+                    // sh '''
+                    // aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI}
+                    // '''
                 }
             }
-       
         }
+
+        // stage('Tag Docker Image') {
+        //     steps {
+        //         script {
+        //             // Tag Docker image for ECR
+        //             sh '''
+        //             docker tag devops-automation/main-image:latest ${ECR_REPO_URI}:devops-automation-main-image
+        //             '''
+        //         }
+        //     }
+        // }
+
+        // stage('Push Docker Image') {
+        //     steps {
+        //         script {
+        //             // Push Docker image to ECR
+        //             sh '''
+        //             docker push ${ECR_REPO_URI}:devops-automation-main-image
+        //             '''
+        //         }
+        //     }
+       
+        // }
         stage('Run Docker Container') {
             steps {
                 script {
