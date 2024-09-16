@@ -67,9 +67,9 @@ spec:
           limits:
             cpu: 500m
             memory: 1500Mi
-        envFrom:
-          - configMapRef:
-              name: oamplus-configmap
+        # envFrom:
+        #   - configMapRef:
+        #       name: oamplus-configmap
         ports:
         - containerPort: 2009
       restartPolicy: Always
