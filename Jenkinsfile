@@ -150,7 +150,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'opl-cluster', contextName: '', credentialsId: 'kuber-sa', namespace: 'prod', serverUrl: 'https://E3DC10EBCD5AF37B0438DDB01471C7E6.sk1.us-east-1.eks.amazonaws.com']]) {
-    sh "kubectl apply -f /kubernetes/deployment.yml"
+    sh "kubectl apply -f deployment.yml"
 
             //     withAWS(credentials: 'aws-k8s', region: 'us-east-1') {
             //     sh ('aws eks update-kubeconfig --region us-east-1 --name opl-cluster')
