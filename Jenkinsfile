@@ -132,23 +132,34 @@ pipeline {
         //     }
        
         // }
-        stage('Run Docker Container') {
+        // stage('Run Docker Container') {
+        //     steps {
+        //         script {
+        //             // Construct Docker image name and container name based on job name
+        //             def imageName = "${JOB_NAME}-image"
+        //             def containerName = "${JOB_NAME}-container"
+                    
+        //             echo "Running Docker container: ${containerName}"
+                    
+        //             // Run the Docker container from the built image
+        //             docker.image(imageName).run("-it -p 8081:8081 --name devops-automation")
+        //         }
+        //     }
+        // }
+
+        stage('Deploy') {
             steps {
-                script {
-                    // Construct Docker image name and container name based on job name
-                    def imageName = "${JOB_NAME}-image"
-                    def containerName = "${JOB_NAME}-container"
-                    
-                    echo "Running Docker container: ${containerName}"
-                    
-                    // Run the Docker container from the built image
-                    docker.image(imageName).run("-it -p 8081:8081 --name devops-automation")
+                withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'opl-cluster', contextName: '', credentialsId: 'kuber-sa', namespace: 'prod', serverUrl: 'https://E3DC10EBCD5AF37B0438DDB01471C7E6.sk1.us-east-1.eks.amazonaws.com']]) {
+    sh "kubectl apply -f /kubernetes/deployment.yml"
+
+            //     withAWS(credentials: 'aws-k8s', region: 'us-east-1') {
+            //     sh ('aws eks update-kubeconfig --region us-east-1 --name opl-cluster')
+            //     sh "kubect
                 }
             }
-        }
-
          }
     
-    }    
+    } 
+}
 
-
+    
