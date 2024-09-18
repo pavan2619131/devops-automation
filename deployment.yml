@@ -89,8 +89,8 @@ spec:
   ports:
   - name: devops-automation
     protocol: TCP
-    port: 2009
-    targetPort: 2009
+    port: 8081
+    targetPort: 8081
 
 ---
 
