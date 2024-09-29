@@ -72,9 +72,19 @@ spec:
         #       name: oamplus-configmap
         ports:
         - containerPort: 2009
+        volumeMounts:
+        - name: devops-automation-volume  # Referencing the volume defined below
+          mountPath: /mnt/data             # Path inside the container where the volume is mounted
       restartPolicy: Always
       imagePullSecrets:
       - name: aws-secret
+      volumes:
+      - name: devops-automation-volume
+        persistentVolumeClaim:
+          claimName: devops-automation-pv-claim
+     # restartPolicy: Always
+     # imagePullSecrets:
+      #- name: aws-secret
 
 ---
 
