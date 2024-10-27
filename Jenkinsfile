@@ -10,8 +10,8 @@ pipeline {
         IMAGE_NAME = "${JOB_NAME}-image"    // Docker image name
         IMAGE_TAG = 'latest'                // Docker image tag
 
-        AWS_REGION = 'us-east-1'
-        ECR_REPO_URI = '533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep'
+       // AWS_REGION = 'us-east-1'
+      //  ECR_REPO_URI = '533267326662.dkr.ecr.us-east-1.amazonaws.com/new-one-testing-rep'
     
     }
     stages{
